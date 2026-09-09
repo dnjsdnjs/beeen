@@ -1,0 +1,606 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>호빈이 머리카락 키우기</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Jua&family=Gowun+Dodum&display=swap" rel="stylesheet">
+<style>
+  :root{
+    --sky-top:#bfe8f5;
+    --sky-bottom:#eaf7ee;
+    --grass:#4c9f70;
+    --grass-dark:#356e4d;
+    --sun:#f4b740;
+    --ink:#22352a;
+    --card:#ffffff;
+    --line:#d8ece0;
+  }
+  *{box-sizing:border-box;}
+  body{
+    margin:0;
+    min-height:100vh;
+    font-family:'Gowun Dodum', sans-serif;
+    color:var(--ink);
+    background:linear-gradient(180deg,var(--sky-top) 0%, var(--sky-bottom) 55%, #ffffff 100%);
+    display:flex;
+    flex-direction:column;
+    align-items:center;
+    padding:28px 16px 60px;
+  }
+  h1{
+    font-family:'Jua', sans-serif;
+    font-size:clamp(28px,5vw,42px);
+    color:var(--grass-dark);
+    margin:0 0 6px;
+    text-shadow:2px 2px 0 rgba(255,255,255,0.6);
+  }
+  .subtitle{
+    margin:0 0 22px;
+    font-size:15px;
+    color:#3f5c4c;
+    text-align:center;
+    max-width:520px;
+    line-height:1.6;
+  }
+  .layout{
+    display:flex;
+    gap:22px;
+    align-items:flex-start;
+    width:100%;
+    max-width:980px;
+    flex-wrap:wrap;
+    justify-content:center;
+  }
+  .stage-card{
+    background:var(--card);
+    border-radius:22px;
+    padding:14px;
+    box-shadow:0 14px 30px rgba(53,110,77,0.18);
+    border:3px solid var(--line);
+  }
+  #stage{
+    display:block;
+    width:min(560px,88vw);
+    height:auto;
+    aspect-ratio:4/3;
+    border-radius:14px;
+    cursor:crosshair;
+    background:#fff9f0;
+    touch-action:none;
+  }
+  .panel{
+    width:280px;
+    background:var(--card);
+    border-radius:22px;
+    padding:18px 18px 20px;
+    box-shadow:0 14px 30px rgba(53,110,77,0.12);
+    border:3px solid var(--line);
+    display:flex;
+    flex-direction:column;
+    gap:16px;
+  }
+  .section-label{
+    font-family:'Jua', sans-serif;
+    font-size:15px;
+    color:var(--grass-dark);
+    margin:0 0 8px;
+  }
+  .row{
+    display:flex;
+    gap:8px;
+    flex-wrap:wrap;
+  }
+  .mode-btn{
+    flex:1;
+    padding:9px 6px;
+    border-radius:14px;
+    border:2px solid var(--line);
+    background:#f6fbf8;
+    font-family:'Gowun Dodum', sans-serif;
+    font-size:14px;
+    cursor:pointer;
+    color:var(--ink);
+    transition:transform .12s ease, background .15s ease;
+  }
+  .mode-btn.active{
+    background:var(--grass);
+    border-color:var(--grass-dark);
+    color:#fff;
+    transform:translateY(-1px);
+  }
+  .swatch{
+    width:30px;height:30px;border-radius:50%;
+    border:3px solid transparent;
+    cursor:pointer;
+    padding:0;
+  }
+  .swatch.active{
+    border-color:var(--sun);
+    box-shadow:0 0 0 2px var(--grass-dark);
+  }
+  .style-btn{
+    flex:1;
+    padding:8px 4px;
+    border-radius:12px;
+    border:2px solid var(--line);
+    background:#f6fbf8;
+    font-size:13px;
+    cursor:pointer;
+    font-family:'Gowun Dodum', sans-serif;
+  }
+  .style-btn.active{
+    background:#fff4de;
+    border-color:var(--sun);
+  }
+  .bg-btn{
+    flex:1 1 auto;
+    padding:8px 6px;
+    border-radius:12px;
+    border:2px solid var(--line);
+    background:#f6fbf8;
+    font-size:13px;
+    cursor:pointer;
+    font-family:'Gowun Dodum', sans-serif;
+  }
+  .bg-btn.active{
+    background:#e7f3ff;
+    border-color:#4a90d9;
+  }
+  input[type="range"]{
+    width:100%;
+    accent-color:var(--grass);
+  }
+  .file-btn, .action-btn{
+    width:100%;
+    padding:10px;
+    border-radius:14px;
+    border:none;
+    font-family:'Gowun Dodum', sans-serif;
+    font-size:14px;
+    cursor:pointer;
+    color:#fff;
+    background:var(--grass);
+  }
+  .action-btn.water{ background:#4a90d9; }
+  .action-btn.reset{ background:#c1440e; }
+  .file-label{
+    display:block;
+    width:100%;
+    padding:10px;
+    border-radius:14px;
+    border:2px dashed var(--grass);
+    text-align:center;
+    font-size:13.5px;
+    cursor:pointer;
+    color:var(--grass-dark);
+    background:#f2fbf6;
+  }
+  .file-label input{ display:none; }
+  .toggle-row{
+    display:flex;
+    align-items:center;
+    gap:8px;
+    font-size:13.5px;
+  }
+  .hint{
+    font-size:12.5px;
+    color:#6c8578;
+    line-height:1.5;
+    margin:0;
+  }
+</style>
+</head>
+<body>
+
+  <h1>호빈이 머리카락 키우기</h1>
+  <p class="subtitle">브러시로 쓱 문질러 머리카락을 여러 개 심어보세요! 중력의 영향을 받아 아래로 스르륵 자라나요. 가위로 선을 그어 닿은 부분을 잘라보세요!</p>
+
+  <div class="layout">
+    <div class="stage-card">
+      <canvas id="stage" width="800" height="600"></canvas>
+    </div>
+
+    <div class="panel">
+      <div>
+        <p class="section-label">🏠 배경</p>
+        <div class="row">
+          <button class="bg-btn active" data-bg="salon">미용실</button>
+          <button class="bg-btn" data-bg="sky">하늘</button>
+          <button class="bg-btn" data-bg="studio">스튜디오</button>
+        </div>
+      </div>
+
+      <div>
+        <p class="section-label">📷 사진</p>
+        <label class="file-label">
+          내 사진으로 바꾸기
+          <input type="file" id="photoInput" accept="image/*">
+        </label>
+      </div>
+
+      <div>
+        <p class="section-label">✏️ 도구</p>
+        <div class="row">
+          <button class="mode-btn active" id="brushModeBtn">브러시</button>
+          <button class="mode-btn" id="scissorModeBtn">가위</button>
+        </div>
+      </div>
+
+      <div>
+        <p class="section-label">🎨 머리 색</p>
+        <div class="row" id="colorRow"></div>
+      </div>
+
+      <div>
+        <p class="section-label">〰️ 스타일</p>
+        <div class="row">
+          <button class="style-btn active" data-style="straight">직모</button>
+          <button class="style-btn" data-style="wavy">웨이브</button>
+          <button class="style-btn" data-style="curly">곱슬</button>
+        </div>
+      </div>
+
+      <div>
+        <p class="section-label">🌱 자라는 속도</p>
+        <input type="range" id="growthSpeed" min="1" max="10" value="4">
+      </div>
+
+      <div class="toggle-row">
+        <input type="checkbox" id="regrowToggle" checked>
+        <label for="regrowToggle">자른 후에도 다시 자라기</label>
+      </div>
+
+      <button class="action-btn water" id="waterBtn">💧 물주기</button>
+      <button class="action-btn reset" id="resetBtn">↺ 머리카락 초기화</button>
+
+      <p class="hint"><b>브러시:</b> 캔버스를 드래그하면 연속으로 머리카락이 여러 개 심어집니다.<br><b>가위:</b> 자르고 싶은 경로를 쓱 그으면, 선에 닿은 머리카락이 그 지점에서 잘립니다.</p>
+    </div>
+  </div>
+
+<script>
+(function(){
+  const canvas = document.getElementById('stage');
+  const ctx = canvas.getContext('2d');
+  const W = canvas.width, H = canvas.height;
+
+  const DEFAULT_PHOTO_DATA = "data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAeAAAAKACAYAAABEyKtSAAEAAElEQVR42uz9W4x16Xnfif2e97TW2oeq+s59ZrN5JiVZUosSJdHTjmxZsiU7Bjw9Yxi2A2gCeXLhy1wMAqTNi1wkMOKLXAQBBrlJkIsQMYKJYDtjTzAcO4P4QI9pyS1KIpvdZLNP36mOe++13lMu3rXW3vWRii2PJ2pS7w+o7u/7qmrX3ruq9n89z/s8/z9UKpVKpVKpVCqVSqVSqVQqlUqlUqlUKpVKpVKpVCqVSqVSqVQqlUqlUqlUKpVKpVKpVCqVSqVSqVQqlUqlUqlUKpVKpVKpVCqVSqVSqVQqlUqlUqlUKpVKpVKpVCqVSqVSqVQqlUqlUqlUKpVKpVKpVCqVSqVSqVQqlUqlUqlUKpVKpVKpVCqVSqVSqVQqlUqlUqlUKpVKpVKpVCqVSqVSqVQqlUqlUqlUKpVKpVKpVCqVSqVSqVQqlUqlUqlUKpVKpVKpVCqVSqVSqVQqlUqlUqlUKpVKpVKpVCqVSqVSqVQqlUqlUqlUKpVKpVKpVCqVSqVSqVQqlUqlUqlUKpVKpVKpVCqVSqVSqVQqlUqlUqlUKpVKpVKpVCqVSqVSqVQqlUqlUqlUKpVKpVKpVCqVSqVSqVQqlUqlUqlUKpVKpVKpVCqVSqVSqVQqlUqlUqlUKpVKpVKpVCqVSqVSqVQqlUqlUqlUKpVKpVKpVCqVSqVSqVQqlUqlUqlUKpVKpVKpVCqVSqVSqVQqlUqlUqlUKpVKpVKpVCqVSqVSqVQqlUqlUqlUKpVKpVKpVCqVSqVSqVQqlUqlUqlUKpVKpVKpVCqVSqVSqVQqlUqlUqlUKpVKpVKpVCqVSqVSqVQqlUqlUqlUKpVKpVKpVCqVSqVSqVQqlUqlUqlUKpVKpVKpVCqVSqVSqVQqlUqlUqlUKpVKpVKpVCqVSqVSqVQqlUqlUqlUKpVKpVKpVCqVSqVSqVQqlUqlUqlUKpVKpVKpVCqVSqVSqVQqlUqlUqlUKpVKpVKpVCqVSqVSqVQqlUqlUqlUKpVKpVKpVCqVSqVSqVQqlUqlUqlUKpVKpVKpVCqVSqVSqVQqlUqlUqlUKpVKpVKpVCqVSqVSqVQqlUqlUqlUKpVKpVKpVCqVSqVSqVQqlUqlUqlUKpVKpVKpVCqVSqVSqVQqlUqlUqlUKpVKpVKpVCqVSqVSqVQqlUqlUqlUKpVKpVKpVCqVSqVSqVQqlUqlUqlUKpVKpVKpVCqVSqVSqVQqlUqlUqlUKpVKpVKpVCqVSqVSqVQqHwpkfPt93//KK6+YV199VU9/nt/z2mvq33C7f5B/r1QqlR+oF85K5d/1Zyb/Pu+/9u+vvvqq++Ds7CXlRYO+9E3anBhz9e677/ruqW51Iif9b/zGb2xeffVVd3FxcRxCsCJy9g/+wT+4GkVbf/nLXx6euG357Gc/a7uuyy+99FL68pe/nF955RXVdZ3++3/v7w2I5PqtqlQqVYArPww/I98jaD/zM79wT6l4Q8SeLxZcvXPjxvb1UShf/vVfNze/tXEnJ3063e2eUsPweWPMSchZ+mF408BvW2vbnPPTYDCGiyFno2I8CUEe4eTKwSYlfSwSdlrrt0eR1o8ePToRkbsejlVUSinJEHYicum9v/jK3bv3+fKXY/3WVSqVKsCVH9SfhycrWX1xcbHcbtVCNeHZ5NNPKiUnCowyqpec31NK/XbO+fFisVj57Nc6axGtv5Bz/sLQ959SIg+dcf+czG/HlJ8xiudFKZdSarLkx4h8N+d4KaJt38fncg4LlH4no74qiXdCjs9bpT+eyR/J5GfIuY0hnIrof+bx/2Rh7Vt/9+/+3fd/n+q8UqlUqgBXPnTf/+8RrFdB/+bnP38ifX6haduPO2c+KsjHjFFPOdccKSUrcrJkXE5BWWs3rjXvdU37ryTL2ii5JUqWPqYX+8E/s91sjkJKfde2DzQyLBoXtt6v26bZhhhUJseY0p333333333333333333333333333333333333333333333333333333333333333333333333333333333333333333333333333333333333333333333333333333333333333333333333333333333333333333333333333333333333333333333333333333333333333333333333333333333333333333333333333333333333333333333333333333333333333333333333333333333333333333333333333333333333333333333333333333333333333333333333333333333333333333333333333333333333333333333333333333333333333333333333333333333333333333333333333333333333333333333333333333333333333333333333333333333333333333333333333333333333333333333333333333333333333333333333333333333333333333333333333333333333333333333333333333333333333333333333333333333333333333333333333333333333333333333333333333333333333333333333333333333333333333333333333333333333333333333333333333333333333333333333333333333333333333333333333333333333333333333333333333333333333333333333333333333333333333333333333333333333333333333333333333333333333333333333333333333333333333333333333333333333333333333333333333333333333333333333333333333333333333333333333333333333333333333333333333333333333333333333333333333333333333333333333333333333333333333333333333333333333333333333333333333333333333333333333333333333333333333333333333333333333333333333333333333333333333333333333333333333333333333333333333333333333333333333333333333333333333333333333333333333333333333333333333333333333333333333333333333333333333333333333333333333333333333333333333333333333333333333333333333333333333333333333333333333333333333333333333333333333333333333333333333333333333333333333333333333333333333333333333333333333333333333333333333333333333333333333333333333333333333333333333333333333333333333333333333333333333333333333333333333333333333333333333333333333333333333333333333333333333333333333333333333333333333333333333333333333333333333333333333333333333333333333333333333333333333333333333333333333333333333333333333333333333333333333333333333333333333333333333333333333333333333333333333333333333333333333333333333333333333333333333333333333333333333333333333333333333333333333333333333333333333333333333333333333333333333333333333333333333333333333333333333333333333333333333333333333333333333333333333333333333333333333333333333333333333333333333333333333333333333333333333333333333333333333333333333333333333333333333333333333333333333333333333333333333333333333333333333333333333333333333333333333333333333333333333333333333333333333333333333333333333333333333333333333333333333333333333333333333333333333333333333333333333333333333333333333333333333333333333333333333333333333333333333333333333333333333333333333333333333333333333333333333333333333333333333333333333333333333333333333333333333333333333333333333333333333333" + "data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAAEAAAABCAYAAAAfFcSJAAAADUlEQVR42mNk+M9QDwADhgGAWjR9awAAAABJRU55LI1T33sXFxf/H33pS18KACg0mNOn310mAAAAAElFTkSuQmCC";
+
+  let bgMode = 'salon';
+  let curMode = 'brush';
+  let curColor = '#222222';
+  let curStyle = 'straight';
+  let growthSpeed = 4;
+  let regrow = true;
+
+  let isDrawing = false;
+  let lastPos = null;
+  let cutPath = [];
+
+  // Hair Strand Data Structure
+  // Each hair = array of points {x, y, vx, vy}
+  let hairs = [];
+
+  const COLORS = ['#222222', '#5d3a1a', '#e8b84d', '#cc3333', '#8844aa', '#4488cc', '#ffffff'];
+
+  // Color Swatches
+  const colorRow = document.getElementById('colorRow');
+  COLORS.forEach((c, idx)=>{
+    const b = document.createElement('button');
+    b.className = 'swatch' + (idx===0?' active':'');
+    b.style.background = c;
+    if(c==='#ffffff') b.style.border = '2px solid #ccc';
+    b.addEventListener('click', ()=>{
+      document.querySelectorAll('.swatch').forEach(s=>s.classList.remove('active'));
+      b.classList.add('active');
+      curColor = c;
+    });
+    colorRow.appendChild(b);
+  });
+
+  // Photo Upload
+  let userImage = new Image();
+  userImage.src = DEFAULT_PHOTO_DATA;
+
+  document.getElementById('photoInput').addEventListener('change', (e)=>{
+    const file = e.target.files[0];
+    if(file){
+      const reader = new FileReader();
+      reader.onload = (evt)=>{
+        userImage = new Image();
+        userImage.onload = () => draw();
+        userImage.src = evt.target.result;
+      };
+      reader.readAsDataURL(file);
+    }
+  });
+
+  // UI Event Listeners
+  document.querySelectorAll('.bg-btn').forEach(b=>{
+    b.addEventListener('click', ()=>{
+      document.querySelectorAll('.bg-btn').forEach(x=>x.classList.remove('active'));
+      b.classList.add('active');
+      bgMode = b.dataset.bg;
+      draw();
+    });
+  });
+
+  document.getElementById('brushModeBtn').addEventListener('click', ()=>{
+    curMode = 'brush';
+    document.getElementById('brushModeBtn').classList.add('active');
+    document.getElementById('scissorModeBtn').classList.remove('active');
+    canvas.style.cursor = 'crosshair';
+  });
+
+  document.getElementById('scissorModeBtn').addEventListener('click', ()=>{
+    curMode = 'scissor';
+    document.getElementById('scissorModeBtn').classList.add('active');
+    document.getElementById('brushModeBtn').classList.remove('active');
+    canvas.style.cursor = 'url("data:image/svg+xml;utf8,<svg xmlns=\'http://www.w3.org/2000/svg\' width=\'24\' height=\'24\' viewBox=\'0 0 24 24\' fill=\'none\' stroke=\'%23c1440e\' stroke-width=\'2\' stroke-linecap=\'round\' stroke-linejoin=\'round\'><circle cx=\'6\' cy=\'6\' r=\'3\'/><circle cx=\'6\' cy=\'18\' r=\'3\'/><line x1=\'20\' y1=\'4\' x2=\'8.12\' y2=\'15.88\'/><line x1=\'14.47\' y1=\'14.47\' x2=\'20\' y2=\'20\'/><line x1=\'8.12\' y1=\'8.12\' x2=\ me12\' y2=\'12\'/></svg>") 0 24, pointer';
+  });
+
+  document.querySelectorAll('.style-btn').forEach(b=>{
+    b.addEventListener('click', ()=>{
+      document.querySelectorAll('.style-btn').forEach(x=>x.classList.remove('active'));
+      b.classList.add('active');
+      curStyle = b.dataset.style;
+    });
+  });
+
+  document.getElementById('growthSpeed').addEventListener('input', (e)=>{
+    growthSpeed = parseInt(e.target.value);
+  });
+
+  document.getElementById('regrowToggle').addEventListener('change', (e)=>{
+    regrow = e.target.checked;
+  });
+
+  document.getElementById('waterBtn').addEventListener('click', ()=>{
+    // Temporary speed boost
+    const orig = growthSpeed;
+    growthSpeed = Math.min(15, growthSpeed * 2.5);
+    setTimeout(()=> growthSpeed = orig, 2500);
+  });
+
+  document.getElementById('resetBtn').addEventListener('click', ()=>{
+    hairs = [];
+  });
+
+  // Canvas Coordinates Helper
+  function getPos(e){
+    const rect = canvas.getBoundingClientRect();
+    const clientX = e.touches ? e.touches[0].clientX : e.clientX;
+    const clientY = e.touches ? e.touches[0].clientY : e.clientY;
+    return {
+      x: (clientX - rect.left) * (W / rect.width),
+      y: (clientY - rect.top) * (H / rect.height)
+    };
+  }
+
+  // Plant single hair root
+  function plantHair(x, y){
+    hairs.push({
+      root: {x, y},
+      nodes: [{x, y}],
+      color: curColor,
+      style: curStyle,
+      isGrowing: true,
+      phase: Math.random() * Math.PI * 2
+    });
+  }
+
+  // Plant multiple hairs along continuous drag line
+  function plantHairsAlongLine(p1, p2){
+    const dist = Math.hypot(p2.x - p1.x, p2.y - p1.y);
+    const step = 6; // Spacing between planted hairs
+    const count = Math.max(1, Math.floor(dist / step));
+    for(let i=0; i<count; i++){
+      const t = i / count;
+      const x = p1.x + (p2.x - p1.x)*t + (Math.random()-0.5)*4;
+      const y = p1.y + (p2.y - p1.y)*t + (Math.random()-0.5)*4;
+      plantHair(x, y);
+    }
+  }
+
+  // Pointer Events
+  function onPointerDown(e){
+    isDrawing = true;
+    const pos = getPos(e);
+    lastPos = pos;
+    if(curMode === 'scissor'){
+      cutPath = [pos];
+    } else {
+      plantHair(pos.x, pos.y);
+    }
+  }
+
+  function onPointerMove(e){
+    if(!isDrawing) return;
+    const pos = getPos(e);
+
+    if(curMode === 'brush'){
+      plantHairsAlongLine(lastPos, pos);
+      lastPos = pos;
+    } else if(curMode === 'scissor'){
+      cutPath.push(pos);
+      checkAndCutHairLine(lastPos, pos);
+      lastPos = pos;
+    }
+  }
+
+  function onPointerUp(){
+    isDrawing = false;
+    cutPath = [];
+  }
+
+  canvas.addEventListener('mousedown', onPointerDown);
+  canvas.addEventListener('mousemove', onPointerMove);
+  window.addEventListener('mouseup', onPointerUp);
+
+  canvas.addEventListener('touchstart', (e)=>{ e.preventDefault(); onPointerDown(e); }, {passive:false});
+  canvas.addEventListener('touchmove', (e)=>{ e.preventDefault(); onPointerMove(e); }, {passive:false});
+  canvas.addEventListener('touchend', onPointerUp);
+
+  // Line Intersection Helper (Segment p1-p2 vs Segment p3-p4)
+  function lineIntersects(p1, p2, p3, p4){
+    function ccw(A, B, C){
+      return (C.y - A.y) * (B.x - A.x) > (B.y - A.y) * (C.x - A.x);
+    }
+    return (ccw(p1, p3, p4) !== ccw(p2, p3, p4)) && (ccw(p1, p2, p3) !== ccw(p1, p2, p4));
+  }
+
+  // Cut hair at intersection point
+  function checkAndCutHairLine(p1, p2){
+    hairs.forEach(hair => {
+      if(hair.nodes.length < 2) return;
+      for(let i = 0; i < hair.nodes.length - 1; i++){
+        const n1 = hair.nodes[i];
+        const n2 = hair.nodes[i+1];
+        if(lineIntersects(p1, p2, n1, n2)){
+          // Cut at this segment! Keep nodes up to i
+          hair.nodes = hair.nodes.slice(0, i + 1);
+          if(!regrow){
+            hair.isGrowing = false;
+          }
+          break;
+        }
+      }
+    });
+  }
+
+  // Draw Background
+  function drawBackground(){
+    ctx.clearRect(0,0,W,H);
+    if(bgMode === 'salon'){
+      const grad = ctx.createLinearGradient(0,0,0,H);
+      grad.addColorStop(0, '#f2ece4');
+      grad.addColorStop(1, '#dfd5c6');
+      ctx.fillStyle = grad;
+      ctx.fillRect(0,0,W,H);
+
+      // Mirror Frame
+      ctx.fillStyle = '#ffffff';
+      ctx.shadowColor = 'rgba(0,0,0,0.08)';
+      ctx.shadowBlur = 20;
+      ctx.fillRect(W/2 - 220, 30, 440, 520);
+      ctx.shadowBlur = 0;
+
+      ctx.strokeStyle = '#e2d5c3';
+      ctx.lineWidth = 12;
+      ctx.strokeRect(W/2 - 220, 30, 440, 520);
+    } else if(bgMode === 'sky'){
+      const grad = ctx.createLinearGradient(0,0,0,H);
+      grad.addColorStop(0, '#a1c4fd');
+      grad.addColorStop(1, '#c2e9fb');
+      ctx.fillStyle = grad;
+      ctx.fillRect(0,0,W,H);
+
+      // Clouds
+      ctx.fillStyle = 'rgba(255,255,255,0.7)';
+      ctx.beginPath();
+      ctx.arc(120, 100, 40, 0, Math.PI*2);
+      ctx.arc(160, 90, 50, 0, Math.PI*2);
+      ctx.arc(200, 100, 40, 0, Math.PI*2);
+      ctx.fill();
+    } else {
+      ctx.fillStyle = '#3a3d40';
+      ctx.fillRect(0,0,W,H);
+    }
+
+    // Draw Character / Photo
+    if(userImage.complete && userImage.naturalWidth > 0){
+      const scale = Math.min(W / userImage.width, (H - 80) / userImage.height) * 0.8;
+      const iw = userImage.width * scale;
+      const ih = userImage.height * scale;
+      const ix = (W - iw)/2;
+      const iy = H - ih - 20;
+      ctx.drawImage(userImage, ix, iy, iw, ih);
+    }
+  }
+
+  // Update Hair Growth (Applying Gravity)
+  function updateHairs(){
+    if(growthSpeed === 0) return;
+
+    const gravity = 0.35 * (growthSpeed / 4); // Gravity pulling downwards
+
+    hairs.forEach(hair => {
+      if(!hair.isGrowing) return;
+
+      const lastNode = hair.nodes[hair.nodes.length - 1];
+      
+      // Calculate growth vector with Gravity
+      let dx = 0;
+      let dy = (1.2 * growthSpeed / 4) + gravity; // Strong natural downward pull
+
+      // Apply Hair Style variations
+      if(hair.style === 'wavy'){
+        dx = Math.sin(hair.nodes.length * 0.4 + hair.phase) * 1.8;
+      } else if(hair.style === 'curly'){
+        dx = Math.cos(hair.nodes.length * 0.8 + hair.phase) * 3.2;
+      } else {
+        // Straight slightly sways
+        dx = (Math.random() - 0.5) * 0.5;
+      }
+
+      const nextNode = {
+        x: lastNode.x + dx,
+        y: lastNode.y + dy
+      };
+
+      // Limit max length
+      if(hair.nodes.length < 180){
+        hair.nodes.push(nextNode);
+      }
+    });
+  }
+
+  // Render Hairs & Cut Line
+  function draw(){
+    drawBackground();
+
+    // Render Hairs
+    hairs.forEach(hair => {
+      if(hair.nodes.length < 2) return;
+
+      ctx.beginPath();
+      ctx.strokeStyle = hair.color;
+      ctx.lineWidth = 2.5;
+      ctx.lineCap = 'round';
+      ctx.lineJoin = 'round';
+
+      ctx.moveTo(hair.nodes[0].x, hair.nodes[0].y);
+      for(let i = 1; i < hair.nodes.length; i++){
+        ctx.lineTo(hair.nodes[i].x, hair.nodes[i].y);
+      }
+      ctx.stroke();
+    });
+
+    // Render Cut Line (Scissor Drag Trail)
+    if(curMode === 'scissor' && cutPath.length > 1){
+      ctx.beginPath();
+      ctx.strokeStyle = '#c1440e';
+      ctx.lineWidth = 2;
+      ctx.setLineDash([6, 4]);
+      ctx.moveTo(cutPath[0].x, cutPath[0].y);
+      for(let i = 1; i < cutPath.length; i++){
+        ctx.lineTo(cutPath[i].x, cutPath[i].y);
+      }
+      ctx.stroke();
+      ctx.setLineDash([]);
+    }
+  }
+
+  // Main Loop
+  function loop(){
+    updateHairs();
+    draw();
+    requestAnimationFrame(loop);
+  }
+
+  loop();
+})();
+</script>
+</body>
+</html>
