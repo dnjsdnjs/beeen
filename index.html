@@ -191,7 +191,7 @@
     margin:0;
   }
 
-
+  /* 팝업 모달 스타일 */
   .popup-overlay {
     position: fixed;
     top: 0; left: 0;
@@ -265,8 +265,9 @@
         <li>게임 시작 시 '자른 후에도 다시 자라기' 기본 해제</li>
       </ul>
     </div>
-    
-  </div>  <h1>호빈이 머리카락 키우기</h1>
+  </div>
+
+  <h1>호빈이 머리카락 키우기</h1>
   <p class="subtitle">브러시로 쓱 문질러 머리카락을 심어보세요! 가위로 선을 그어 닿은 부분을 잘라보세요!</p>
 
   <div class="layout">
@@ -324,7 +325,7 @@
         <label for="regrowToggle">자른 후에도 다시 자라기</label>
       </div>
 
-      <button class="action-btn water" id="waterBtn">탈모약💊</button>
+      <button class="action-btn water" id="waterBtn">💧 물주기</button>
       <button class="action-btn reset" id="resetBtn">↺ 머리카락 초기화</button>
 
       <p class="hint"><b>브러시:</b> 캔버스를 드래그하면 연속으로 머리카락이 여러 개 심어집니다.<br><b>가위:</b> 자르고 싶은 경로를 쓱 그으면, 선에 닿은 머리카락이 그 지점에서 잘립니다.</p>
@@ -333,6 +334,20 @@
 
 <script>
 (function(){
+  // 팝업 닫기 처리
+  const popup = document.getElementById('noticePopup');
+  const popupCloseBtn = document.getElementById('popupCloseBtn');
+  
+  function closePopup(e){
+    if(e) e.stopPropagation();
+    popup.style.display = 'none';
+  }
+  
+  popupCloseBtn.addEventListener('click', closePopup);
+  popup.addEventListener('click', (e) => {
+    if (e.target === popup) closePopup(e);
+  });
+
   const canvas = document.getElementById('stage');
   const ctx = canvas.getContext('2d');
   const W = canvas.width, H = canvas.height;
@@ -342,29 +357,15 @@
   let curColor = '#222222';
   let curStyle = 'straight';
   let growthSpeed = 4;
-  let regrow = document.getElementById('regrowToggle').checked;
+
+  const regrowToggle = document.getElementById('regrowToggle');
+  regrowToggle.checked = false;
+  let regrow = regrowToggle.checked;
 
   let isDrawing = false;
   let lastPos = null;
   let cutPath = [];
-const popup = document.getElementById('noticePopup');
-const popupCloseBtn = document.getElementById('popupCloseBtn');
 
-function closePopup(e){
-  if(e) e.stopPropagation();
-  popup.style.display = 'none';
-}
-
-popupCloseBtn.addEventListener('click', closePopup);
-popup.addEventListener('click', (e) => {
-  if (e.target === popup) closePopup(e);
-});
-
-// draw() 함수 내부 오타 수정 (약 320번째 줄)
-// 기존: ctx.lineTo(hair.nodes[i].i, hair.nodes[i].y);
-// 수정:
-ctx.lineTo(hair.nodes[i].x, hair.nodes[i].y);
-  // 배경 이미지 경로 설정
   const BACKGROUNDS = {
     salon: "salon.png",
     sky: "sky.png",
@@ -374,12 +375,10 @@ ctx.lineTo(hair.nodes[i].x, hair.nodes[i].y);
   let bgImage = new Image();
   bgImage.src = BACKGROUNDS.salon;
 
-  // Hair Strand Data Structure
   let hairs = [];
 
   const COLORS = ['#222222', '#5d3a1a', '#e8b84d', '#cc3333', '#8844aa', '#4488cc', '#ffffff'];
 
-  // Color Swatches
   const colorRow = document.getElementById('colorRow');
   COLORS.forEach((c, idx)=>{
     const b = document.createElement('button');
@@ -394,7 +393,6 @@ ctx.lineTo(hair.nodes[i].x, hair.nodes[i].y);
     colorRow.appendChild(b);
   });
 
-  // Photo Upload (기본 캐릭터 beeen.png)
   let userImage = new Image();
   userImage.src = "beeen.png"; 
 
@@ -410,7 +408,6 @@ ctx.lineTo(hair.nodes[i].x, hair.nodes[i].y);
     }
   });
 
-  // UI Event Listeners
   document.querySelectorAll('.bg-btn').forEach(b=>{
     b.addEventListener('click', ()=>{
       document.querySelectorAll('.bg-btn').forEach(x=>x.classList.remove('active'));
@@ -448,7 +445,7 @@ ctx.lineTo(hair.nodes[i].x, hair.nodes[i].y);
     growthSpeed = parseInt(e.target.value);
   });
 
-  document.getElementById('regrowToggle').addEventListener('change', (e)=>{
+  regrowToggle.addEventListener('change', (e)=>{
     regrow = e.target.checked;
   });
 
@@ -462,7 +459,6 @@ ctx.lineTo(hair.nodes[i].x, hair.nodes[i].y);
     hairs = [];
   });
 
-  // Canvas Coordinates Helper
   function getPos(e){
     const rect = canvas.getBoundingClientRect();
     const clientX = e.touches ? e.touches[0].clientX : e.clientX;
@@ -473,7 +469,6 @@ ctx.lineTo(hair.nodes[i].x, hair.nodes[i].y);
     };
   }
 
-  // Plant single hair root
   function plantHair(x, y){
     hairs.push({
       root: {x, y},
@@ -485,7 +480,6 @@ ctx.lineTo(hair.nodes[i].x, hair.nodes[i].y);
     });
   }
 
-  // Plant multiple hairs along continuous drag line
   function plantHairsAlongLine(p1, p2){
     const dist = Math.hypot(p2.x - p1.x, p2.y - p1.y);
     const step = 6;
@@ -498,7 +492,6 @@ ctx.lineTo(hair.nodes[i].x, hair.nodes[i].y);
     }
   }
 
-  // Pointer Events
   function onPointerDown(e){
     isDrawing = true;
     const pos = getPos(e);
@@ -537,7 +530,6 @@ ctx.lineTo(hair.nodes[i].x, hair.nodes[i].y);
   canvas.addEventListener('touchmove', (e)=>{ e.preventDefault(); onPointerMove(e); }, {passive:false});
   canvas.addEventListener('touchend', onPointerUp);
 
-  // Line Intersection Helper
   function lineIntersects(p1, p2, p3, p4){
     function ccw(A, B, C){
       return (C.y - A.y) * (B.x - A.x) > (B.y - A.y) * (C.x - A.x);
@@ -545,7 +537,6 @@ ctx.lineTo(hair.nodes[i].x, hair.nodes[i].y);
     return (ccw(p1, p3, p4) !== ccw(p2, p3, p4)) && (ccw(p1, p2, p3) !== ccw(p1, p2, p4));
   }
 
-  // Cut hair at intersection point
   function checkAndCutHairLine(p1, p2){
     hairs.forEach(hair => {
       if(hair.nodes.length < 2) return;
@@ -563,11 +554,9 @@ ctx.lineTo(hair.nodes[i].x, hair.nodes[i].y);
     });
   }
 
-  // Draw Background
   function drawBackground(){
     ctx.clearRect(0, 0, W, H);
 
-    // 배경 사진 파일이 로드되었으면 사진을 그리고, 없으면 기본 색상 출력
     if (bgImage.complete && bgImage.naturalWidth > 0) {
       ctx.drawImage(bgImage, 0, 0, W, H);
     } else {
@@ -589,7 +578,6 @@ ctx.lineTo(hair.nodes[i].x, hair.nodes[i].y);
       }
     }
 
-    // Draw Character / Photo (beeen.png)
     if(userImage.complete && userImage.naturalWidth > 0){
       const scale = Math.min(W / userImage.width, (H - 80) / userImage.height) * 0.8;
       const iw = userImage.width * scale;
@@ -600,7 +588,6 @@ ctx.lineTo(hair.nodes[i].x, hair.nodes[i].y);
     }
   }
 
-  // Update Hair Growth
   function updateHairs(){
     if(growthSpeed === 0) return;
 
@@ -633,11 +620,9 @@ ctx.lineTo(hair.nodes[i].x, hair.nodes[i].y);
     });
   }
 
-  // Render Hairs & Cut Line
   function draw(){
     drawBackground();
 
-    // Render Hairs
     hairs.forEach(hair => {
       if(hair.nodes.length < 2) return;
 
@@ -649,12 +634,12 @@ ctx.lineTo(hair.nodes[i].x, hair.nodes[i].y);
 
       ctx.moveTo(hair.nodes[0].x, hair.nodes[0].y);
       for(let i = 1; i < hair.nodes.length; i++){
+        // ★ 오타 수정 부분 (hair.nodes[i].i -> hair.nodes[i].x)
         ctx.lineTo(hair.nodes[i].x, hair.nodes[i].y);
       }
       ctx.stroke();
     });
 
-    // Render Cut Line
     if(curMode === 'scissor' && cutPath.length > 1){
       ctx.beginPath();
       ctx.strokeStyle = '#c1440e';
@@ -669,7 +654,6 @@ ctx.lineTo(hair.nodes[i].x, hair.nodes[i].y);
     }
   }
 
-  // Main Loop
   function loop(){
     updateHairs();
     draw();
