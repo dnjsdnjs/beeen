@@ -535,7 +535,9 @@ function setBackground(type) {
       ctx.drawImage(userImage, ix, iy, iw, ih);
     }
   }
-
+// 가위로 잘라내는 로직 내부
+hair.segments = hair.segments.slice(0, cutIndex); // 잘린 마디 이후를 제거
+hair.growthRate = 0; // ★ 추가: 자라는 속도를 0으로 만들어 멈춤
   // Update Hair Growth (Applying Gravity)
   function updateHairs(){
     if(growthSpeed === 0) return;
