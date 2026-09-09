@@ -193,7 +193,69 @@
 </style>
 </head>
 <body>
+/* 팝업 모달 스타일 */
+  .popup-overlay {
+    position: fixed;
+    top: 0; left: 0;
+    width: 100vw; height: 100vh;
+    background: rgba(0, 0, 0, 0.4);
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    z-index: 9999;
+  }
+  .popup-card {
+    background: #ffffff;
+    width: min(340px, 85vw);
+    padding: 24px 20px;
+    border-radius: 20px;
+    border: 3px solid var(--line);
+    box-shadow: 0 10px 25px rgba(0,0,0,0.15);
+    position: relative;
+  }
+  .popup-close {
+    position: absolute;
+    top: 12px; right: 16px;
+    background: none;
+    border: none;
+    font-size: 22px;
+    font-weight: bold;
+    color: #888;
+    cursor: pointer;
+    line-height: 1;
+  }
+  .popup-close:hover { color: var(--ink); }
+  .popup-title {
+    font-family: 'Jua', sans-serif;
+    font-size: 20px;
+    color: var(--grass-dark);
+    margin: 0 0 14px;
+    border-bottom: 2px dashed var(--line);
+    padding-bottom: 8px;
+  }
+  .popup-list {
+    margin: 0;
+    padding-left: 18px;
+    font-size: 14px;
+    color: var(--ink);
+    line-height: 1.7;
+  }
+</style>
+</head>
+<body>
 
+  < NOTICE 팝업 >
+  <div class="popup-overlay" id="noticePopup">
+    <div class="popup-card">
+      <button class="popup-close" id="popupCloseBtn">&times;</button>
+      <h2 class="popup-title">NOTICE</h2>
+      <ul class="popup-list">
+        <li>오류 수정: 머리 자르면 다시 자라지 않음</li>
+        <li>배경 이미지 생김</li>
+        <li>게임 시작 시 '자른 후에도 다시 자라기' 기본 해제</li>
+      </ul>
+    </div>
+  </div>
   <h1>호빈이 머리카락 키우기</h1>
   <p class="subtitle">브러시로 쓱 문질러 머리카락을 심어보세요! 가위로 선을 그어 닿은 부분을 잘라보세요!</p>
 
@@ -252,7 +314,7 @@
         <label for="regrowToggle">자른 후에도 다시 자라기</label>
       </div>
 
-      <button class="action-btn water" id="waterBtn">💧 물주기</button>
+      <button class="action-btn water" id="waterBtn">탈모약💊</button>
       <button class="action-btn reset" id="resetBtn">↺ 머리카락 초기화</button>
 
       <p class="hint"><b>브러시:</b> 캔버스를 드래그하면 연속으로 머리카락이 여러 개 심어집니다.<br><b>가위:</b> 자르고 싶은 경로를 쓱 그으면, 선에 닿은 머리카락이 그 지점에서 잘립니다.</p>
