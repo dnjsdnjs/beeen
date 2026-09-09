@@ -265,6 +265,7 @@
         <li>게임 시작 시 '자른 후에도 다시 자라기' 기본 해제</li>
       </ul>
     </div>
+    
   </div>  <h1>호빈이 머리카락 키우기</h1>
   <p class="subtitle">브러시로 쓱 문질러 머리카락을 심어보세요! 가위로 선을 그어 닿은 부분을 잘라보세요!</p>
 
@@ -346,7 +347,23 @@
   let isDrawing = false;
   let lastPos = null;
   let cutPath = [];
+const popup = document.getElementById('noticePopup');
+const popupCloseBtn = document.getElementById('popupCloseBtn');
 
+function closePopup(e){
+  if(e) e.stopPropagation();
+  popup.style.display = 'none';
+}
+
+popupCloseBtn.addEventListener('click', closePopup);
+popup.addEventListener('click', (e) => {
+  if (e.target === popup) closePopup(e);
+});
+
+// draw() 함수 내부 오타 수정 (약 320번째 줄)
+// 기존: ctx.lineTo(hair.nodes[i].i, hair.nodes[i].y);
+// 수정:
+ctx.lineTo(hair.nodes[i].x, hair.nodes[i].y);
   // 배경 이미지 경로 설정
   const BACKGROUNDS = {
     salon: "salon.png",
