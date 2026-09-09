@@ -213,14 +213,16 @@
   }
   .popup-close {
     position: absolute;
-    top: 12px; right: 16px;
+    top: 10px; right: 14px;
     background: none;
     border: none;
-    font-size: 22px;
+    font-size: 24px;
     font-weight: bold;
     color: #888;
     cursor: pointer;
     line-height: 1;
+    padding: 4px 8px;
+    z-index: 10;
   }
   .popup-close:hover { color: var(--ink); }
   .popup-title {
@@ -233,28 +235,37 @@
   }
   .popup-list {
     margin: 0;
-    padding-left: 18px;
+    padding-left: 0;
+    list-style: none;
     font-size: 14px;
     color: var(--ink);
     line-height: 1.7;
+  }
+  .popup-list li {
+    position: relative;
+    padding-left: 14px;
+  }
+  .popup-list li::before {
+    content: "-";
+    position: absolute;
+    left: 0;
   }
 </style>
 </head>
 <body>
 
-  < NOTICE 팝업 >
+  <!-- NOTICE 팝업 -->
   <div class="popup-overlay" id="noticePopup">
     <div class="popup-card">
-      <button class="popup-close" id="popupCloseBtn">&times;</button>
-      <h2 class="popup-title">NOTICE</h2>
+      <button type="button" class="popup-close" id="popupCloseBtn">&times;</button>
+      <h2 class="popup-title">오류 수정</h2>
       <ul class="popup-list">
-        <li>오류 수정: 머리 자르면 다시 자라지 않음</li>
+        <li>머리 자르면 다시 자라지 않음</li>
         <li>배경 이미지 생김</li>
         <li>게임 시작 시 '자른 후에도 다시 자라기' 기본 해제</li>
       </ul>
     </div>
-  </div>
-  <h1>호빈이 머리카락 키우기</h1>
+  </div>  <h1>호빈이 머리카락 키우기</h1>
   <p class="subtitle">브러시로 쓱 문질러 머리카락을 심어보세요! 가위로 선을 그어 닿은 부분을 잘라보세요!</p>
 
   <div class="layout">
