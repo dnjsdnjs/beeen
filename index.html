@@ -478,12 +478,24 @@ userImage.src = "beeen.png";
       grad.addColorStop(1, '#dfd5c6');
       ctx.fillStyle = grad;
       ctx.fillRect(0,0,W,H);
-// 배경 이미지 경로 설정 부분
+// 1. 사용할 배경 경로 정의
 const BACKGROUNDS = {
-  salon: "salon.png",   // 보유하신 미용실 사진 파일명 (예: my_salon.jpg)
-  sky: "sky.png",       // 보유하신 하늘 사진 파일명 (예: blue_sky.png)
-  studio: "studio.png"  // 보유하신 스튜디오 사진 파일명 (예: bg_studio.png)
+  salon: "salon.png",
+  sky: "sky.png",
+  studio: "studio.png"
 };
+
+let bgImage = new Image();
+
+// 2. 배경 변경 함수 수정
+function setBackground(type) {
+  if (BACKGROUNDS[type]) {
+    bgImage.src = BACKGROUNDS[type];
+    bgImage.onload = () => {
+      drawCanvas(); // 이미지 로드 완료 후 캔버스 다시 그리기
+    };
+  }
+}
       // Mirror Frame
       ctx.fillStyle = '#ffffff';
       ctx.shadowColor = 'rgba(0,0,0,0.08)';
